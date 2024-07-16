@@ -2,7 +2,7 @@
   "name": "fsf-backend",
   "version": "1.0.0",
   "description": "Backend for full stack force",
-  "main": "app.ts",
+  "main": "app.js",
 "scripts": {
     "build": "tsc",
     "start": "node build/app.js",
