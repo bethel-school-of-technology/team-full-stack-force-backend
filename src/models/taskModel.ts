@@ -1,10 +1,11 @@
-import { Document, Schema, model } from 'mongoose';
+import { Document, Schema, model, Types } from 'mongoose';
+import { IUser } from './userModel';
 
 interface ITask extends Document {
     user: string;
     priority: number;
     task: string;
-    assigned: number;
+    assigned: Types.ObjectId| IUser;
     dueDate: Date;
 };
 
@@ -25,7 +26,7 @@ const taskSchema: Schema = new Schema({
         unique: false
     },
     assigned: {
-        type: Number,
+        type: Schema.Types.ObjectId,
         required: true,
         unique: false
     },
