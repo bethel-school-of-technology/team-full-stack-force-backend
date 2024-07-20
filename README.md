@@ -8,7 +8,8 @@ This is the backend for Task Management webapp.
 - Express.js
 - TypeScript
 - JavaScript
-- MongoDB
+- MySQL
+- Sequelize
 
 
 ### Usage
