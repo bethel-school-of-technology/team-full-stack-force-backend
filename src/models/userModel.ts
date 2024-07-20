@@ -1,29 +1,35 @@
-import { Document, Schema, model } from 'mongoose';
+import { DataTypes, InferAttributes, InferCreationAttributes, Model, Sequelize } from "sequelize";
 
-interface IUser extends Document {
-    firstName: string;
-    lastName: string;
-    email: string;
+export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+    declare userId: number;
+    declare firstName: string;
+    declare lastName: string;
+    declare email: string;
+}
+
+export function TaskFactory(sequelize: Sequelize) {
+    User.init({
+        userId: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+            allowNull: false
+        },
+        firstName: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        lastName: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        email: {
+            type: DataTypes.STRING,
+            allowNull: false
+        }
+    }, {
+        tableName: 'users',
+        freezeTableName: true,
+        sequelize
+    });
 };
-
-const userSchema: Schema = new Schema({
-    firstName: {
-        type: String,
-        required: true,
-        unique: false
-    },
-    lastName: {
-        type: String,
-        required: true,
-        unique: false
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: false
-    }
-});
-
-const User = model<IUser>('User', userSchema);
-
-export { IUser, User };
