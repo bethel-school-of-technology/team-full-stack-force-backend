@@ -6,6 +6,7 @@ export class Task extends Model<InferAttributes<Task>, InferCreationAttributes<T
     declare task: string;
     declare assigned: number;
     declare dueDate: Date;
+    declare createdDate: Date;
 }
 
 export function TaskFactory(sequelize: Sequelize) {
@@ -31,6 +32,11 @@ export function TaskFactory(sequelize: Sequelize) {
         dueDate: {
             type: DataTypes.DATE,
             allowNull: false
+        },
+        createdDate: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW,
         }
     }, {
         tableName: 'tasks',
