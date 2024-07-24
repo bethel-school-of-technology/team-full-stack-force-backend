@@ -1,8 +1,8 @@
 import express, { NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
-const cors = require('cors');
 import taskRoutes from './routes/taskRoutes';
 import userRoutes from './routes/userRoutes';
+const cors = require('cors');
 
 import { db } from './models';
 
@@ -16,7 +16,7 @@ app.use(express.urlencoded({extended: true}))
 
 // routes
 app.use('/api/tasks', taskRoutes);
-app.use('/api/users', userRoutes);
+app.use('/api/auth', userRoutes);
 
 // 404 if not found
 app.use((req: Request, res: Response, next: NextFunction) => {
