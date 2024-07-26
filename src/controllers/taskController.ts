@@ -21,16 +21,15 @@ export const getTaskById: RequestHandler = async (req, res, next) => {
 
 export const addTask: RequestHandler = async (req, res, next) => {
     try {
-        const { priority, task, assigned, dueDate } = req.body;
+        const { priority, task, dueDate } = req.body;
 
-        if (priority === undefined || task === undefined || assigned === undefined || dueDate === undefined) {
+        if (priority === undefined || task === undefined || dueDate === undefined) {
             return res.status(400).json({ status: 'ERROR', message: 'Missing fields detected' });
         }
 
         const newTask = await Task.create({
             priority,
             task,
-            assigned,
             dueDate,
         });
 

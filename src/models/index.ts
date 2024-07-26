@@ -1,5 +1,5 @@
 import { Sequelize } from "sequelize"
-import { TaskFactory } from "./taskModel"
+import { AssociateUserMessage, TaskFactory } from "./taskModel"
 import { UserFactory } from "./userModel"
 
 
@@ -15,5 +15,6 @@ const sequelize = new Sequelize(dbName, username, password, {
 
 TaskFactory(sequelize);
 UserFactory(sequelize);
+AssociateUserMessage();
 
 export const db = sequelize;
