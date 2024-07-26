@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { User } from "../models/userModel";
+import { comparePasswords, signUserToken } from "../services/authentication";
 
 export const getUserById: RequestHandler = async (req, res, next) => {
     let itemId = req.params.id;
@@ -32,7 +33,27 @@ export const addUser: RequestHandler = async (req, res, next) => {
     if (createdUser) {
         res.status(201).json({ status: 'OK' });
     } else {
-        res.status(400).json({ status: 'ERROR' });
+        res.status(400).json({ status: 'ERROR'});
     };
 };
 
+export const loginUser: RequestHandler = async (req, res, next) => {
+    let existingUser: User | null = await User.findOne({ 
+        where: { email: req.body.email }
+    });
+
+    if (existingUser) {
+        let passwordsMatch = await comparePasswords(req.body.password, existingUser.password);
+        
+        if (passwordsMatch) {
+            let token = await signUserToken(existingUser);
+            res.status(200).json({ status: 'OK', token: token });
+        }
+        else {
+            res.status(401).json({ status: 'ERROR', code: 'PASSWORD'});
+        }
+    }
+    else {
+        res.status(401).json({ status: 'ERROR', code: 'USERNAME'});
+    }
+}
