@@ -23,10 +23,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     res.status(404).end();
 })
 
-db.sync().then(() => {
-    console.log("Connected to MySQL");
-    
-})
+db.sync({ alter: true }).then(() => {
+    console.info("Connected to MySQL")
+});
 
 app.listen(3000);
 console.log("Server listening on port 3000");
