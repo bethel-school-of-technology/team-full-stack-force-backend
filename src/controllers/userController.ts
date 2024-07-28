@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { User } from "../models/userModel";
-import { comparePasswords, hashPassword, signUserToken } from "../services/authentication";
+import { comparePasswords, hashPassword, signUserToken, verifyUser } from "../services/authentication";
 
 export const getUserById: RequestHandler = async (req, res, next) => {
     let itemId = req.params.id;
@@ -14,6 +14,12 @@ export const getUserById: RequestHandler = async (req, res, next) => {
 };
 
 export const editUser: RequestHandler = async (req, res, next) => {
+    let verifiedUser: User | null = await verifyUser(req);
+
+    if (!verifiedUser) {
+        return res.status(403).json({ status: 'ERROR', code: 'AUTH' });
+    };
+
     let itemId = req.params.id;
     let updatedItem: User = req.body;
 

@@ -29,7 +29,7 @@ export const verifyUser = async (req: Request) => {
     const authHeader = req.headers.authorization;
 
     if (authHeader) {
-        const token = authHeader.split(" ")[1];
+        const token = authHeader
 
         try {
             let decoded: any = await jwt.verify(token, secret);
