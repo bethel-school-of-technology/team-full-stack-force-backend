@@ -1,16 +1,18 @@
 import { DataTypes, InferAttributes, InferCreationAttributes, Model, Sequelize } from "sequelize";
-import { User } from "./userModel";
+import { User } from "./userModel";  // Ensure this import is correct and points to your User model
 
+// Define Task model
 export class Task extends Model<InferAttributes<Task>, InferCreationAttributes<Task>> {
     declare taskId?: number;
     declare priority: number;
     declare task: string;
     declare dueDate: Date;
-    declare createdDate?: Date;
     declare userId?: number;
+    declare createdDate?: Date;
 }
 
-export function TaskFactory(sequelize: Sequelize) {
+// Factory function to initialize Task model
+export function TaskFactory(sequelize: Sequelize): void {
     Task.init({
         taskId: {
             type: DataTypes.INTEGER,
@@ -38,19 +40,16 @@ export function TaskFactory(sequelize: Sequelize) {
         userId: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            references: {
-                model: User,
-                key: 'id'
-            }
         }
     }, {
         tableName: 'tasks',
         freezeTableName: true,
         sequelize
     });
-};
+}
 
-export function AssociateUserMessage() {
+// Function to associate Task model with User model
+export function AssociateUserMessage(): void {
     User.hasMany(Task, { foreignKey: 'userId' });
     Task.belongsTo(User, { foreignKey: 'userId' });
 }
