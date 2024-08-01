@@ -10,32 +10,31 @@ export const getAllTasks: RequestHandler = async (req, res, next) => {
 
 export const getTaskById: RequestHandler = async (req, res, next) => {
     let itemId = req.params.id;
-    let taskItem: Task | null = await Task.findByPk(itemId);
-    
-    if (taskItem) {
+
+    try {
+        let taskItem: Task | null = await Task.findByPk(itemId);
+
         res.status(200).json({ task: taskItem });
-    } else {
-        res.status(400).json({ status: 'ERROR' });
-    };
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: 'Server Error' })
+    }
 };
 
 export const getTaskByUser: RequestHandler = async (req, res, next) => {
     const userId = parseInt(req.params.userId, 10);
 
     if (isNaN(userId)) {
-        return res.status(400).json({ status: 'ERROR', code: 'MISSING' });
+        return res.status(400).json({ status: 'Missing UserId' });
     }
 
     try {
         const tasks = await Task.findAll({ where: { userId } });
 
-        if (tasks.length === 0) {
-            return res.status(404).json({ status: 'ERROR', code: 'NOTFOUND' });
-        }
-
-        res.status(200).json({ status: 'OK', tasks });
+        res.status(200).json({ tasks });
     } catch (error) {
         console.error(error);
+        res.status(500).json({ status: 'Server Error' })
     }
 };
 
@@ -43,14 +42,14 @@ export const addTask: RequestHandler = async (req, res, next) => {
     let verifiedUser: User | null = await verifyUser(req);
 
     if (!verifiedUser) {
-        return res.status(403).json({ status: 'ERROR', code: 'AUTH' });
+        return res.status(401).json({ status: 'Authentication Error' });
     };
 
     try {
         const { priority, task, dueDate } = req.body;
 
         if (priority === undefined || task === undefined || dueDate === undefined) {
-            return res.status(400).json({ status: 'ERROR', code: 'MISSING' });
+            return res.status(400).json({ status: 'Missing Details' });
         }
 
         const newTask = await Task.create({
@@ -61,10 +60,10 @@ export const addTask: RequestHandler = async (req, res, next) => {
         });
         
 
-        res.status(201).json({ status: 'OK', task: newTask });
+        res.status(201).json({ task: newTask });
     } catch (error) {
         console.error(error);
-        res.status(400).json({ status: 'ERROR' });
+        res.status(500).json({ status: 'Server Error' });
     }
 };
 
@@ -72,7 +71,7 @@ export const editTask: RequestHandler = async (req, res, next) => {
     let verifiedUser: User | null = await verifyUser(req);
 
     if (!verifiedUser) {
-        return res.status(403).json({ status: 'ERROR', code: 'AUTH' });
+        return res.status(401).json({ status: 'ERROR', code: 'AUTH' });
     };
 
     let itemId = req.params.id;
@@ -81,9 +80,10 @@ export const editTask: RequestHandler = async (req, res, next) => {
     let [updated] = await Task.update(updatedItem, { where: { taskId: itemId } });
 
     if (updated === 1) {
-        res.status(200).json({ status: 'OK' });
+        res.status(200).json({ status: 'Task Updated' });
     } else {
-        res.status(400).json({ status: 'ERROR' });
+        res.status(400).json({ status: 'Failed to Update' });
+        console.error(updatedItem);
     };
 };
 
