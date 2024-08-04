@@ -5,19 +5,14 @@ import { comparePasswords, hashPassword, signUserToken, verifyUser } from "../se
 export const getUserById: RequestHandler = async (req, res, next) => {
     let itemId = req.params.id;
     let userItem: User | null = await User.findByPk(itemId);
-
-    if (userItem) {
-        res.status(200).json({ user: userItem });
-    } else {
-        res.status(400).json({ status: 'ERROR' });
-    };
+    res.status(200).json({ user: userItem });
 };
 
 export const editUser: RequestHandler = async (req, res, next) => {
     let verifiedUser: User | null = await verifyUser(req);
 
     if (!verifiedUser) {
-        return res.status(403).json({ status: 'ERROR', code: 'AUTH' });
+        return res.status(403).json({ status: 'Authentication Error' });
     };
 
     let itemId = req.params.id;
@@ -26,17 +21,17 @@ export const editUser: RequestHandler = async (req, res, next) => {
     let [updated] = await User.update(updatedItem, { where: { userId: itemId } });
 
     if (updated === 1) {
-        res.status(200).json({ status: 'OK' });
+        res.status(200).json({ status: 'User Updated' });
     } else {
-        res.status(400).json({ status: 'ERROR' });
+        res.status(400).json({ status: 'Unable to Update User' });
     };
 };
 
 export const addUser: RequestHandler = async (req, res, next) => {
     const newUser = req.body;
 
-    if (!newUser.email || !newUser.password) {
-        return res.status(400).json({ status: 'ERROR', code: 'MISSING' });
+    if (!newUser.firstName || !newUser.lastName || !newUser.email || !newUser.password) {
+        return res.status(400).json({ status: 'Missing Details' });
     }
 
     try {
@@ -48,8 +43,9 @@ export const addUser: RequestHandler = async (req, res, next) => {
             email: created.email,
             userId: created.userId
         });
-    } catch {
-        res.status(400).json({ status: 'ERROR' });
+    } catch (error) {
+        res.status(500).json({ status: 'Server Error' });
+        console.error(error);
     }
 };
 
@@ -63,13 +59,13 @@ export const loginUser: RequestHandler = async (req, res, next) => {
 
         if (passwordsMatch) {
             let token = await signUserToken(existingUser);
-            res.status(200).json({ status: 'OK', token: token });
+            res.status(200).json({ token: token });
         }
         else {
-            res.status(401).json({ status: 'ERROR', code: 'PASSWORD' });
+            res.status(401).json({ status: 'Password Error' });
         }
     }
     else {
-        res.status(401).json({ status: 'ERROR', code: 'USERNAME' });
+        res.status(401).json({ status: 'Username Error' });
     }
 }

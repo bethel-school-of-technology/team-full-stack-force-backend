@@ -10,32 +10,36 @@ export const getAllTasks: RequestHandler = async (req, res, next) => {
 
 export const getTaskById: RequestHandler = async (req, res, next) => {
     let itemId = req.params.id;
-    let taskItem: Task | null = await Task.findByPk(itemId);
-    
-    if (taskItem) {
-        res.status(200).json({ task: taskItem });
-    } else {
-        res.status(400).json({ status: 'ERROR' });
-    };
+
+    try {
+        let taskItem: Task | null = await Task.findByPk(itemId);
+
+        if (taskItem) {
+            res.status(200).json({ task: taskItem });
+        } else {
+            res.status(404).json({ task: '' });
+        }
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: 'Server Error' })
+    }
 };
 
 export const getTaskByUser: RequestHandler = async (req, res, next) => {
     const userId = parseInt(req.params.userId, 10);
 
     if (isNaN(userId)) {
-        return res.status(400).json({ status: 'ERROR', code: 'MISSING' });
+        return res.status(404).json({ status: 'Missing UserId' });
     }
 
     try {
         const tasks = await Task.findAll({ where: { userId } });
 
-        if (tasks.length === 0) {
-            return res.status(404).json({ status: 'ERROR', code: 'NOTFOUND' });
-        }
-
-        res.status(200).json({ status: 'OK', tasks });
+        res.status(200).json({ tasks });
     } catch (error) {
         console.error(error);
+        res.status(500).json({ status: 'Server Error' })
     }
 };
 
@@ -43,14 +47,14 @@ export const addTask: RequestHandler = async (req, res, next) => {
     let verifiedUser: User | null = await verifyUser(req);
 
     if (!verifiedUser) {
-        return res.status(403).json({ status: 'ERROR', code: 'AUTH' });
+        return res.status(401).json({ status: 'Authentication Error' });
     };
 
     try {
         const { priority, task, dueDate } = req.body;
 
         if (priority === undefined || task === undefined || dueDate === undefined) {
-            return res.status(400).json({ status: 'ERROR', code: 'MISSING' });
+            return res.status(400).json({ status: 'Missing Details' });
         }
 
         const newTask = await Task.create({
@@ -61,10 +65,10 @@ export const addTask: RequestHandler = async (req, res, next) => {
         });
         
 
-        res.status(201).json({ status: 'OK', task: newTask });
+        res.status(201).json({ task: newTask });
     } catch (error) {
         console.error(error);
-        res.status(400).json({ status: 'ERROR' });
+        res.status(500).json({ status: 'Server Error' });
     }
 };
 
@@ -72,19 +76,33 @@ export const editTask: RequestHandler = async (req, res, next) => {
     let verifiedUser: User | null = await verifyUser(req);
 
     if (!verifiedUser) {
-        return res.status(403).json({ status: 'ERROR', code: 'AUTH' });
+        return res.status(401).json({ status: 'ERROR', code: 'AUTH' });
     };
 
     let itemId = req.params.id;
-    let updatedItem: Task = req.body;
 
-    let [updated] = await Task.update(updatedItem, { where: { taskId: itemId } });
+    try {
+        let requestedItem: Task | null = await Task.findByPk(itemId)
 
-    if (updated === 1) {
-        res.status(200).json({ status: 'OK' });
-    } else {
-        res.status(400).json({ status: 'ERROR' });
-    };
+        if (!requestedItem) {
+            return res.status(400).json({ status: 'Unable to Find Item' });
+        };
+    
+        if (requestedItem.userId !== verifiedUser.userId) {
+            return res.status(403).json({ status: 'Not Allowed' });
+        };
+
+        let updatedItem: Task = req.body;
+
+        let [updated] = await Task.update(updatedItem, { where: { taskId: itemId } });
+    
+        if (updated === 1) {
+            res.status(200).json({ status: 'Task Updated' });
+        } 
+    } catch (error) {
+        res.status(500).json({ status: 'Server Error' });
+        console.error(error);
+    }
 };
 
 export const deleteTask: RequestHandler = async (req, res, next) => {
@@ -95,12 +113,25 @@ export const deleteTask: RequestHandler = async (req, res, next) => {
     };
 
     let itemId = req.params.id;
-    
-    let deleted = await Task.destroy({ where: { taskId: itemId }});
 
-    if (deleted) {
-        res.status(200).json({ status: 'OK' });
-    } else {
-        res.status(400).json({ status: 'ERROR' });
-    };
+    try {
+        let requestedItem: Task | null = await Task.findByPk(itemId)
+
+        if (!requestedItem) {
+            return res.status(400).json({ status: 'Unable to Find Item' });
+        };
+    
+        if (requestedItem.userId !== verifiedUser.userId) {
+            return res.status(403).json({ status: 'Not Allowed' });
+        };
+    
+        let deleted = await Task.destroy({ where: { taskId: itemId }});
+    
+        if (deleted) {
+            res.status(200).json({ status: 'OK' });
+        }
+    } catch (error) {
+        res.status(500).json({ status: 'Server Error' });
+        console.error(error);
+    }
 };
