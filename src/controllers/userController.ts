@@ -62,10 +62,10 @@ export const loginUser: RequestHandler = async (req, res, next) => {
             res.status(200).json({ token: token });
         }
         else {
-            res.status(401).json({ status: 'ERROR', code: 'PASSWORD' });
+            res.status(401).json({ status: 'Password Error' });
         }
     }
     else {
-        res.status(401).json({ status: 'ERROR', code: 'USERNAME' });
+        res.status(401).json({ status: 'Username Error' });
     }
 }
