@@ -5,7 +5,8 @@ import { User } from "../models/userModel";
 
 export const getAllTasks: RequestHandler = async (req, res, next) => {
     let taskList: Task[] = await Task.findAll();
-    res.status(200).json({ taskList });
+    res.status(200).json( taskList ); 
+
 }
 
 export const getTaskById: RequestHandler = async (req, res, next) => {
@@ -15,7 +16,7 @@ export const getTaskById: RequestHandler = async (req, res, next) => {
         let taskItem: Task | null = await Task.findByPk(itemId);
 
         if (taskItem) {
-            res.status(200).json({ task: taskItem });
+            res.status(200).json( taskItem );
         } else {
             res.status(404).json({ task: '' });
         }
