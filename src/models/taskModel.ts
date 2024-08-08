@@ -4,8 +4,9 @@ import { User } from "./userModel";  // Ensure this import is correct and points
 // Define Task model
 export class Task extends Model<InferAttributes<Task>, InferCreationAttributes<Task>> {
     declare taskId?: number;
-    declare priority: number;
-    declare task: string;
+    declare title: string;
+    declare priority: string;
+    declare description: string;
     declare dueDate: Date;
     declare userId?: number;
     declare createdDate?: Date;
@@ -20,11 +21,15 @@ export function TaskFactory(sequelize: Sequelize): void {
             primaryKey: true,
             allowNull: false
         },
-        priority: {
-            type: DataTypes.INTEGER,
+        title: {
+            type: DataTypes.STRING,
             allowNull: false,
         },
-        task: {
+        priority: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        description: {
             type: DataTypes.STRING,
             allowNull: false
         },

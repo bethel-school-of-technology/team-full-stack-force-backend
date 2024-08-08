@@ -52,16 +52,17 @@ export const addTask: RequestHandler = async (req, res, next) => {
     };
 
     try {
-        const { priority, task, dueDate } = req.body;
-
-        if (priority === undefined || task === undefined || dueDate === undefined) {
+        const { title, priority, description, dueDate } = req.body;
+        console.log(req.body);
+        if (priority === undefined || description === undefined || dueDate === undefined) {
             return res.status(400).json({ status: 'Missing Details' });
         }
 
         const newTask = await Task.create({
             userId: verifiedUser.userId,
+            title,
             priority,
-            task,
+            description,
             dueDate,
         });
         
