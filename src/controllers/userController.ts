@@ -2,6 +2,11 @@ import { RequestHandler } from "express";
 import { User } from "../models/userModel";
 import { comparePasswords, hashPassword, signUserToken, verifyUser } from "../services/authentication";
 
+export const getAllUsers: RequestHandler = async (req, res, next) => {
+    let userList: User[] = await User.findAll();
+    res.status(200).json( userList ); 
+}
+
 export const getUserById: RequestHandler = async (req, res, next) => {
     let itemId = req.params.id;
     let userItem: User | null = await User.findByPk(itemId);
