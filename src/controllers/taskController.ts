@@ -78,7 +78,7 @@ export const editTask: RequestHandler = async (req, res, next) => {
     let verifiedUser: User | null = await verifyUser(req);
 
     if (!verifiedUser) {
-        return res.status(401).json({ status: 'ERROR', code: 'AUTH' });
+        return res.status(401).json({ status: 'Authentication Error' });
     };
 
     let itemId = req.params.id;
@@ -111,7 +111,7 @@ export const deleteTask: RequestHandler = async (req, res, next) => {
     let verifiedUser: User | null = await verifyUser(req);
 
     if (!verifiedUser) {
-        return res.status(403).json({ status: 'ERROR', code: 'AUTH' });
+        return res.status(401).json({ status: 'Authentication Error' });
     };
 
     let itemId = req.params.id;
