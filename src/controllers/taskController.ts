@@ -52,9 +52,9 @@ export const addTask: RequestHandler = async (req, res, next) => {
     };
 
     try {
-        const { title, priority, description, dueDate } = req.body;
+        const { title, priority, description, assignedTo, dueDate, completed } = req.body;
         console.log(req.body);
-        if (priority === undefined || description === undefined || dueDate === undefined) {
+        if (priority === undefined || description === undefined || dueDate === undefined || completed === undefined) {
             return res.status(400).json({ status: 'Missing Details' });
         }
 
@@ -63,7 +63,9 @@ export const addTask: RequestHandler = async (req, res, next) => {
             title,
             priority,
             description,
+            assignedTo,
             dueDate,
+            completed
         });
         
 
