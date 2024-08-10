@@ -7,9 +7,11 @@ export class Task extends Model<InferAttributes<Task>, InferCreationAttributes<T
     declare title: string;
     declare priority: string;
     declare description: string;
+    declare assignedTo: string;
     declare dueDate: Date;
     declare userId?: number;
     declare createdDate?: Date;
+    declare completed: Boolean;
 }
 
 // Factory function to initialize Task model
@@ -33,6 +35,10 @@ export function TaskFactory(sequelize: Sequelize): void {
             type: DataTypes.STRING,
             allowNull: false
         },
+        assignedTo: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
         dueDate: {
             type: DataTypes.DATE,
             allowNull: false
@@ -45,6 +51,10 @@ export function TaskFactory(sequelize: Sequelize): void {
         userId: {
             type: DataTypes.INTEGER,
             allowNull: false,
+        },
+        completed: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false
         }
     }, {
         tableName: 'tasks',
