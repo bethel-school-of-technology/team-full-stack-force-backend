@@ -64,7 +64,7 @@ export const loginUser: RequestHandler = async (req, res, next) => {
 
         if (passwordsMatch) {
             let token = await signUserToken(existingUser);
-            res.status(200).json({ token: token });
+            res.status(200).json({ token: token, userId: existingUser.userId });
         }
         else {
             res.status(401).json({ status: 'Password Error' });

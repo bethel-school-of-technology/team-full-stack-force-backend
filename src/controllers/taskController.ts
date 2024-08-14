@@ -4,7 +4,12 @@ import { verifyUser } from "../services/authentication";
 import { User } from "../models/userModel";
 
 export const getAllTasks: RequestHandler = async (req, res, next) => {
-    let taskList: Task[] = await Task.findAll();
+    let taskList: Task[] = await Task.findAll({
+        include: [
+            {model: User, as: 'assignee'},
+            {model: User, as: 'owner'}
+        ]
+    });
     res.status(200).json( taskList ); 
 
 }
@@ -13,7 +18,10 @@ export const getTaskById: RequestHandler = async (req, res, next) => {
     let itemId = req.params.id;
 
     try {
-        let taskItem: Task | null = await Task.findByPk(itemId);
+        let taskItem: Task | null = await Task.findByPk(itemId, {include: [
+            {model: User, as: 'assignee'},
+            {model: User, as: 'owner'}
+        ]});
 
         if (taskItem) {
             res.status(200).json( taskItem );
@@ -35,7 +43,10 @@ export const getTaskByUser: RequestHandler = async (req, res, next) => {
     }
 
     try {
-        const tasks = await Task.findAll({ where: { userId } });
+        const tasks = await Task.findAll({ where: { assignedTo: userId }, include: [
+            {model: User, as: 'assignee'},
+            {model: User, as: 'owner'}
+        ] });
 
         res.status(200).json({ tasks });
     } catch (error) {
