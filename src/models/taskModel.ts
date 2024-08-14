@@ -7,7 +7,7 @@ export class Task extends Model<InferAttributes<Task>, InferCreationAttributes<T
     declare title: string;
     declare priority: string;
     declare description: string;
-    declare assignedTo: string;
+    declare assignedTo?: number;
     declare dueDate: Date;
     declare userId?: number;
     declare createdDate?: Date;
@@ -36,7 +36,7 @@ export function TaskFactory(sequelize: Sequelize): void {
             allowNull: false
         },
         assignedTo: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             allowNull: true
         },
         dueDate: {
@@ -66,5 +66,6 @@ export function TaskFactory(sequelize: Sequelize): void {
 // Function to associate Task model with User model
 export function AssociateUserMessage(): void {
     User.hasMany(Task, { foreignKey: 'userId' });
-    Task.belongsTo(User, { foreignKey: 'userId' });
+    Task.belongsTo(User, { foreignKey: 'userId', as: 'owner' });
+    Task.belongsTo(User, { foreignKey: 'assignedTo', as: 'assignee' });
 }
